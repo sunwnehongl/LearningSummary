@@ -2,11 +2,8 @@ package com.sun.swh.collection;
 
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
+import javax.security.auth.Policy;
+import java.util.*;
 
 
 /**
@@ -18,7 +15,6 @@ public class SetTest {
 
     @Test
     public void testTreeSet() {
-
         Random random = new Random(47);
         Set<Integer> set = new TreeSet<>();
         for (int i = 0; i < 100; i++) {
@@ -32,5 +28,21 @@ public class SetTest {
         Set<String> set = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         Collections.addAll(set,"aepidemic prevention and control lost".split(" "));
         System.out.println(set);
+    }
+
+    @Test
+    public void test() {
+        List list = new ArrayList();
+        Class stringClass = list.getClass();
+
+        ArrayList arrayList = new ArrayList();
+        list = List.class.cast(arrayList);
+        arrayList = ArrayList.class.cast(arrayList);
+        print(1);
+        print("111");
+    }
+
+    private <T> void print(T t) {
+        System.out.println(t);
     }
 }
