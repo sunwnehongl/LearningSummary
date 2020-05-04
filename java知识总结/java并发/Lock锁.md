@@ -11,8 +11,7 @@
 |   方法名| 描述  |
 | ------------ | ------------ |
 |void lock() |获取锁，调用该方法当前线程获取锁，直到获取锁该方法返回，否则一直阻塞。   |
-|void lockInterruptibly()   | 可以响应中断的获取锁，如果在获取锁的过程中线程被中断则释放锁
-并抛出异常。|
+|void lockInterruptibly()   | 可以响应中断的获取锁，如果在获取锁的过程中线程被中断则释放锁并抛出异常。|
 |boolean tryLock()   |尝试非阻塞式的获取锁，改方案调用后立即返回，如果获取到锁返回true，否则返回false。   |
 |boolean tryLock(long time, TimeUnit unit)   |超时获取锁，改方法响应中断，如果在指定的时间内没有获取到锁则返回false。   |
 |void unlock()   | 释放锁  |
