@@ -17,7 +17,8 @@
 |boolean tryLock(long time, TimeUnit unit)   |超时获取锁，改方法响应中断，如果在指定的时间内没有获取到锁则返回false。   |
 |void unlock()   | 释放锁  |
 |Condition newCondition()   | 获取等待通知组件，该组件和锁绑定，只有获取到锁后才能调用Condition的等待和唤醒方法。  |
-###队列同步器AQS
+
+### 队列同步器AQS
 [AQS同步器](https://github.com/sunwnehongl/LearningSummary/blob/master/java%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/java%E5%B9%B6%E5%8F%91/AQS.md "AQS同步器")
-###ReentrantLock
-###ReentrantReadWriteLock
+### ReentrantLock
+### ReentrantReadWriteLock
