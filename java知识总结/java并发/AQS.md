@@ -111,7 +111,77 @@ AQS的同步队列是一个双向队列，AQS有个head属性指向队列的头�
 | thread  | 当前节点的线程,初始化后使用,在使用后失效  |
 | nextWaiter  | 等待队列中的后继节点，如果当前节点是共享的，那么这个这个字段就是一个常量为SHARED，如果是独占的则和next的值一样。	  |
 
-
 ### 独占的获取和释放同步状态
+获取同步状态，该方法不影响线程中断，如果在获取锁的过程中，线程被其他线程中断，该方法不会响应，在进入同步队列后，如果线程被中断，当前节点不会被从同步队列中移除，该方法先调用重写的tryAcquire方法先尝试非阻塞的获取同步状态，如果获取成功则返回，或者把该线程加入到同步队列中，并循环获取同步传递或者挂起，如果被挂起，则等待头节点释放同步状态后唤醒。
+```java
+    public final void acquire(int arg) {
+        if (!tryAcquire(arg) &&
+                acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
+            selfInterrupt();
+    }
+```
+独占获取锁的流程图如下所示：
+![独占获取锁的流程图](https://github.com/sunwnehongl/LearningSummary/blob/master/image/concurrent/%E7%8B%AC%E5%8D%A0%E7%9A%84%E8%8E%B7%E5%8F%96%E9%94%81.png)
+
+把当前线程封装成节点后，添加到同步节点的尾部的代码如下，也就是方法addWaiter的代码逻辑。
+```java
+/**
+     * 生成当前节点并把当前节点加入到同步队列的尾部。
+     * @param mode 模式如果为SHARED则是共享模式，如果EXCLUSIVE则为独占模式
+     * @return 当前节点
+     */
+    private Node addWaiter(Node mode) {
+        // 生成当前节点。
+        Node node = new Node(Thread.currentThread(), mode);
+        // 先用pred记住当前时刻尾节点的引用，后面尾巴节点可能会发生变化。
+        Node pred = tail;
+        // 如果尾部节点不为空，则尝试快速的把节点添加同步队列到尾巴。
+        if (pred != null) {
+            // 先把当前节点的前驱节点指向尾部节点，
+            node.prev = pred;
+            /* 并用CAS把当前节点设置成尾巴节点，如果CAS失败说明在中间有其他线程
+             * 被添加到了同步队列的尾部，需要继续执行enq方法，把该节点添加到尾部。
+             */
+            if (compareAndSetTail(pred, node)) {
+                // 如果当前节点被设置成尾节点后，后续的节点只会添加到当前节点的后面,
+                // 直接把原来的尾部节点的后继节点指向当前节点就完成了节点加入同步队列。
+                pred.next = node;
+                return node;
+            }
+        }
+        // 调用enq方法循环的参数把节点添加到尾部节点，直到成功后返回。
+        enq(node);
+        return node;
+    }
+```
+把当前节点加入到同步队列的方法enq的代码逻辑如下：
+```java
+    /**
+     * 把节点添加到同步队列中
+     */
+    private Node enq(final Node node) {
+        // 循环的尝试通过CAS把节点添加到同步队列中，
+        for (;;) {
+            // 用个对象先记着尾部节点的引用，方便后面CAS方法用。
+            Node t = tail;
+            /**
+             * 如果尾部节点为空，则通过CAS把头节点设置成一个空节点，
+             * 空节点表示没节点获取同步状态，如果设置成功后，还没用设置尾节点
+             * 这断时间tail还是为空，所以  tail = head不用CAS，
+             */
+            if (t == null) {
+                if (compareAndSetHead(new Node()))
+                    tail = head;
+            } else {
+                // 此代码和addWaiter方法快速加入到同步队列的代码相同
+                node.prev = t;
+                if (compareAndSetTail(t, node)) {
+                    t.next = node;
+                    return t;
+                }
+            }
+        }
+    }
+```
 ### 共享的获取和释放同步状态
 ### 限时获取同步状态
