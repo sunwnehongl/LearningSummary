@@ -183,5 +183,69 @@ AQS的同步队列是一个双向队列，AQS有个head属性指向队列的头�
         }
     }
 ```
+
+```java
+    /**
+     * 在循环里不断的获取同步状态，
+     * 如果前驱节点是头节点，则不一致不断的获取同步状态，如果不是同步状态就先判断
+     * 是否需要暂停当前线程，如果需要暂停就暂定当前线程。等头节点释放同步状态后再唤醒当前
+     * 线程。
+     */
+    final boolean acquireQueued(final Node node, int arg) {
+        boolean failed = true;
+        try {
+            boolean interrupted = false;
+            for (;;) {
+                // 如果头节点是前驱节点就尝试非阻塞的获取同步状态
+                final Node p = node.predecessor();
+                if (p == head && tryAcquire(arg)) {
+                    setHead(node);
+                    p.next = null; // help GC
+                    failed = false;
+                    return interrupted;
+                }
+                // 通过判断前面节点的状态判断当前节点是否需要暂停，如果需要就暂停当前线程
+                if (shouldParkAfterFailedAcquire(p, node) &&
+                        parkAndCheckInterrupt())
+                    interrupted = true;
+            }
+        } finally {
+            // 如果当前节点获取同步状态失败，则从同步队列中删除当前节点。
+            if (failed)
+                cancelAcquire(node);
+        }
+    }
+```
+```java
+    /**
+     * 判断当节点是否需要暂停当前线程。
+     */
+    private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
+        int ws = pred.waitStatus;
+        if (ws == Node.SIGNAL)
+            /*
+             * 如果前驱节点的状态为SIGNAL，表示如果前驱节点获取到同步状态或者被取消后会唤醒后面的节点
+             * 这种情况可以暂停当前线程
+             */
+            return true;
+        if (ws > 0) {
+            /*
+             * 如果前驱节点的状态为CANCELLED，则一直向前找，直到找到状态不为CANCELLED的节点为止
+             * 并把当前节点的前驱节点设置为此节点，并把此节点的后继节点设置为当前节点。然后返回false。
+             */
+            do {
+                node.prev = pred = pred.prev;
+            } while (pred.waitStatus > 0);
+            pred.next = node;
+        } else {
+            /*
+             *  如果前驱节点的状态为初始状态或者PROPAGATE，则说明我们需要一个SIGNAL
+             *  不能挂起当前线程，我们需要把前驱节点的状态设置为SIGNAL。
+             */
+            compareAndSetWaitStatus(pred, ws, Node.SIGNAL);
+        }
+        return false;
+    }
+```
 ### 共享的获取和释放同步状态
 ### 限时获取同步状态
