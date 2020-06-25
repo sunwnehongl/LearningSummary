@@ -59,4 +59,18 @@ public class ChannelTest {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Channel间直接传输，不通过中间的Buffer对象
+     */
+    @Test
+    public void test2() {
+        try (FileChannel inChannel = FileChannel.open(Paths.get("D:\\任务.xlsx"), StandardOpenOption.READ);
+             FileChannel outChannel = FileChannel.open(Paths.get("D:\\任务3.xlsx"),StandardOpenOption.READ,StandardOpenOption.WRITE,StandardOpenOption.CREATE)) {
+            inChannel.transferTo(0,inChannel.size(),outChannel);
+        } catch (IOException e) {
+
+            e.printStackTrace();
+        }
+    }
 }
