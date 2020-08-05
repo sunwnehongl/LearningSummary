@@ -6,7 +6,7 @@ package com.sun.pringsummary.model;
  * @Description:
  */
 public class User {
-    private String name;
+    public String name;
     private int age;
 
     public String getName() {

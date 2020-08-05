@@ -13,6 +13,15 @@ import java.util.*;
  */
 public class SetTest {
 
+    public void SetTest() {
+
+
+    }
+
+    public void SetTest(String a) {
+
+    }
+
     @Test
     public void testTreeSet() {
         Random random = new Random(47);
@@ -32,14 +41,9 @@ public class SetTest {
 
     @Test
     public void test() {
-        List list = new ArrayList();
-        Class stringClass = list.getClass();
+        Integer b = 15000;
+        System.out.println(b == 15000);
 
-        ArrayList arrayList = new ArrayList();
-        list = List.class.cast(arrayList);
-        arrayList = ArrayList.class.cast(arrayList);
-        print(1);
-        print("111");
     }
 
     private <T> void print(T t) {
