@@ -2,6 +2,8 @@ package com.shw.javafoundation.nio;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.nio.channels.ByteChannel;
+import java.nio.channels.FileChannel;
 
 /**
  * @Description TODO
@@ -10,6 +12,19 @@ import java.nio.ByteBuffer;
  */
 public class BufferTest {
 
+    private static void directTest() {
+        ByteBuffer buffer = ByteBuffer.allocateDirect(1024);
+        buffer.put("ABCDEFG".getBytes());
+        print(buffer, "put");
+
+        buffer.flip();
+        print(buffer, "flip");
+
+        byte[] data = new byte[buffer.limit()];
+        buffer.get(data);
+        System.out.println("读取到的数据" + new String(data));
+        print(buffer, "get");
+    }
     private static void readAndWriteTest() {
         ByteBuffer buffer = ByteBuffer.allocate(1024);
         print(buffer, "allocate");
@@ -35,6 +50,6 @@ public class BufferTest {
     }
 
     public static void main(String[] args) {
-        readAndWriteTest();
+        directTest();
     }
 }
