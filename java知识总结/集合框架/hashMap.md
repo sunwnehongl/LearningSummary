@@ -19,3 +19,40 @@
 红黑树的基本操作为**添加**和**删除**，删除和添加节点后有可能会破坏红黑树的特性，导致不满足上述的5个条件，而不再是一个红黑树，为了满足这5个条件，添加和删除节点后，需要通过**旋转**和**变色**来保证这5个条件，让该树继续为红黑树，二旋转又分为**左旋**和**右旋**。
 ### 左旋
 以某个节点作为支点旋转，其右子节点旋转变为父节点，自己变为右子节点的左节点，右子节点的左子节点变为该节点的右子节点。
+![rotateLeft](https://github.com/sunwnehongl/LearningSummary/blob/master/image/collection/rotateLeft.png "rotateLeft")
+
+**左旋的伪代码《算法导论》：参考上面的示意图和下面的伪代码，理解“红黑树T的节点x进行左旋”是如何进行的。**
+```c
+LEFT-ROTATE(T, x)  
+01  y ← right[x]            // 前提：这里假设x的右孩子为y。下面开始正式操作
+02  right[x] ← left[y]      // 将 “y的左孩子” 设为 “x的右孩子”，即 将β设为x的右孩子
+03  p[left[y]] ← x          // 将 “x” 设为 “y的左孩子的父亲”，即 将β的父亲设为x
+04  p[y] ← p[x]             // 将 “x的父亲” 设为 “y的父亲”
+05  if p[x] = nil[T]       
+06  then root[T] ← y                 // 情况1：如果 “x的父亲” 是空节点，则将y设为根节点
+07  else if x = left[p[x]]  
+08            then left[p[x]] ← y    // 情况2：如果 x是它父节点的左孩子，则将y设为“x的父节点的左孩子”
+09            else right[p[x]] ← y   // 情况3：(x是它父节点的右孩子) 将y设为“x的父节点的右孩子”
+10  left[y] ← x             // 将 “x” 设为 “y的左孩子”
+11  p[x] ← y                // 将 “x的父节点” 设为 “y”
+```
+
+### 右旋
+以某个节点为支点，旋转其左子节点作为其父节点，自己做原左子节点的右子节点，原左子节点的右子节点作为该节点的左子节点。
+![rotateLeft](https://github.com/sunwnehongl/LearningSummary/blob/master/image/collection/rotaterigth.png "rotaterigth")
+
+**右旋的伪代码《算法导论》：参考上面的示意图和下面的伪代码，理解“红黑树T的节点y进行右旋”是如何进行的。** 
+```c
+RIGHT-ROTATE(T, y)  
+01  x ← left[y]             // 前提：这里假设y的左孩子为x。下面开始正式操作
+02  left[y] ← right[x]      // 将 “x的右孩子” 设为 “y的左孩子”，即 将β设为y的左孩子
+03  p[right[x]] ← y         // 将 “y” 设为 “x的右孩子的父亲”，即 将β的父亲设为y
+04  p[x] ← p[y]             // 将 “y的父亲” 设为 “x的父亲”
+05  if p[y] = nil[T]       
+06  then root[T] ← x                 // 情况1：如果 “y的父亲” 是空节点，则将x设为根节点
+07  else if y = right[p[y]]  
+08            then right[p[y]] ← x   // 情况2：如果 y是它父节点的右孩子，则将x设为“y的父节点的左孩子”
+09            else left[p[y]] ← x    // 情况3：(y是它父节点的左孩子) 将x设为“y的父节点的左孩子”
+10  right[x] ← y            // 将 “y” 设为 “x的右孩子”
+11  p[y] ← x                // 将 “y的父节点” 设为 “x”
+```
