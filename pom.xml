@@ -10,6 +10,7 @@
     <modules>
         <module>SpringSummary</module>
         <module>JavaFoundation</module>
+        <module>Mysql</module>
     </modules>
     <packaging>pom</packaging>
 
